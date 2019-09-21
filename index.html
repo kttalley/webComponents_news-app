@@ -18,7 +18,82 @@
     <main>
 
     </main>
-    <script src = "index.js"type = "module"></script>
+    <script>
+        class NewsArticle extends HTMLElement {
+
+
+            constructor() {
+                super();
+                this.root = this.attachShadow({ mode: 'open' });
+            }
+
+
+            set article(article) {
+                this.root.innerHTML = `
+    <style>
+        h2 {
+            font-family: Georgia, 'Times New Roman', Times, serif;
+        }
+
+        a,
+        a:visited {
+            text-decoration: none;
+            color: inherit;
+        }
+
+        img {
+            width: 100%;
+        }
+    </style>
+        <a href = "${article.url}">
+            <h2>${article.title}</h2>
+            <img src = '${article.urlToImage} || ''}">
+            <p>${article.description || ''}</p>
+        </a>`;
+            }
+        }
+
+        customElements.define(`news-article`, NewsArticle);
+
+        const apiKey = '3f91d51a212b4a0aa198da194e97655b';
+        const topHeadlinesUrl =
+            'https://newsapi.org/v2/top-headlines?country=us&apiKey=' + apiKey;
+
+        // export { apiKey, topHeadlinesUrl };
+        // import './news-article.js';
+        // import { topHeadlinesUrl } from './newsApi.js';
+
+        window.addEventListener('load', () => {
+            getNews();
+            // registerSW();
+        });
+
+        async function getNews() {
+            const res = await fetch(topHeadlinesUrl);
+            const json = await res.json();
+
+            const main = document.querySelector('main');
+
+            json.articles.forEach(article => {
+                const el = document.createElement('news-article');
+                el.article = article;
+                main.appendChild(el);
+            });
+        }
+
+// async function registerSW() {
+//     if ('serviceWorker' in navigator) {
+//       try {
+//         await navigator.serviceWorker.register('./sw.js');
+//       } catch (e) {
+//         console.log(`SW registration failed`);
+//       }
+//     }
+//   }
+
+
+
+    </script>
 </body>
 
 </html>
